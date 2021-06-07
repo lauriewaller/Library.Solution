@@ -59,7 +59,7 @@ namespace Library.Controllers
       // we injected Identity's SignInManager as a service 
       if (result.Succeeded)
       {
-        return RedirectToAction("Index");
+        return RedirectToAction("LibrarianHome", "Home");
       }
       else
       {
@@ -73,5 +73,6 @@ namespace Library.Controllers
       await _signInManager.SignOutAsync();
       return RedirectToAction("Index");
     }
+
   }
 }

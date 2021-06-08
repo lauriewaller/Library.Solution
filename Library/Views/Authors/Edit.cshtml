@@ -1,0 +1,31 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Author
+
+<h2>edit author details</h2>
+
+<hr />
+<h4>@Html.DisplayFor(model => model.Name)</h4>
+<br>
+
+@using (Html.BeginForm())
+{
+  @Html.HiddenFor(model => model.AuthorId)
+  @Html.Label("Name")
+  @Html.EditorFor(model => model.Name)
+
+  <br>
+  <br>
+
+  @Html.Label("Assign To A Book")
+  @Html.DropDownList("BookId")
+
+  <br>
+  <br>
+  <input type="submit" value="Save Changes" required="true" />
+}
+
+
+<li>@Html.ActionLink("Back To Author List", "Index")</li>

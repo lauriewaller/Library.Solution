@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;  // allows us to authorize users
 using Microsoft.AspNetCore.Identity; // allows this controller to interact with users from the db
 using System.Threading.Tasks; // allows us to call async methods
 using System.Security.Claims; // allows claim based authorization
+using System;
 
 namespace Library.Controllers
 {
@@ -121,5 +122,37 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Details", new { id = book.BookId});
     }
+
+    public ActionResult AddCopies(int id)
+    {
+      var thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
+      return View(thisBook);
+    }
+
+    [HttpPost]
+    public ActionResult AddCopies(int BookId, Copy copy, string CopyNumber)
+    {
+      var convertedCopyNumber = Convert.ToInt32(CopyNumber);
+      for (int i = 0; i < convertedCopyNumber; i ++)
+      {
+        _db.Copies.Add(copy);
+        _db.SaveChanges();
+        copy.CopyId = copy.CopyId + 1;
+      }
+
+      return RedirectToAction("Index");
+    }
   }
 }
+
+//Add Author -- get an integer to create copies
+//needs book id to connect ot
+//one to many relationship 
+
+//post -- need book id 
+//add multiples copies to database 
+//won't create all properties for copy instances yet
+//each copy needs a unique id
+
+//Convert.ToInt32
+// result = Convert.ToInt32(value);

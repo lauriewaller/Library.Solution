@@ -12,7 +12,7 @@ using System;
 
 namespace Library.Controllers
 {
-  [Authorize] //This allows access to the BooksController only if a user is logged in. We'll add this attribute to a controller whenever we want to limit its access to signed-in users. This is just one application of authorization.
+  //[Authorize] //This allows access to the BooksController only if a user is logged in. We'll add this attribute to a controller whenever we want to limit its access to signed-in users. This is just one application of authorization.
   public class BooksController : Controller
   {
     private readonly LibraryContext _db;

@@ -10,12 +10,10 @@ namespace Library.Models
       //this.Books = new HashSet<Book>();
     }
     public int CopyId { get; set; }
-
     public DateTime CheckedOutDate { get; set; }
     public DateTime DueDate { get; set; }
     public bool CheckedOut { get; set; } = false;
     public string BookTitle { get; set; }
-
     public int BookId { get; set; } 
     public virtual Book Book { get; set; }
     //public virtual ICollection<Book> Books { get; set; }

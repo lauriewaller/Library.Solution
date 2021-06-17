@@ -3,6 +3,7 @@
 }
 
 @model Library.Models.Book;
+@using Library.Models;
 
 <h2>Book Details</h2>
 <hr />
@@ -20,7 +21,7 @@ else
   @foreach (var join in Model.JoinEntities)
     {
       <li>@Html.ActionLink($"{join.Author.Name}", "Details", "Authors", new { id = join.Author.AuthorId })</li>
-      @using (Html.BeginForm("DeleteAuthor", "Books"))
+      @using (Html.BeginForm("CheckOut", "Books"))
       {
         @Html.Hidden("joinId", @join.AuthorBookId)
         <input type="submit" value="Delete" />
@@ -35,3 +36,27 @@ else
 <p>@Html.ActionLink("Delete Book", "Delete", new { id = Model.BookId })</p>
 <p>@Html.ActionLink("Add Copies", "AddCopies", new { id = Model.BookId })</p>
 <p>@Html.ActionLink("Add an Author Profile to Book", "AddAuthor", new { id = Model.BookId })</p>
+
+
+<h3>Copies for this book:</h3>
+
+<ul>
+  @foreach (Copy copy in @ViewBag.copies)
+  {
+    <li>@copy.BookTitle | @copy.CopyId</li>
+    @if (@copy.CheckedOut == true)
+    {
+      <p class="checkOutText">this copy is checked out</p>
+    }
+    else if (@copy.CheckedOut == false)
+    {
+      @using (Html.BeginForm("CheckOut", "Books"))
+      {
+        @Html.Hidden("copyId", @copy.CopyId)
+        <input type="submit" value="CheckOut" />
+      }
+    }
+
+  }
+
+</ul>

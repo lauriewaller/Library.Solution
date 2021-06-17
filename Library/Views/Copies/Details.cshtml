@@ -1,0 +1,19 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Copy;
+@using Library.Models;
+
+<h2>@Html.DisplayFor(model => model.BookTitle)</h2>
+
+@* <h3>@Html.LabelFor(model => model.CheckedOutDate)</h3> *@
+<h3>@Html.Label("Checkout Date:")</h3>
+<h3>@Html.DisplayFor(model => model.CheckedOutDate)</h3>
+
+@* <h3>@Html.LabelFor(model => model.DueDate)</h3> *@
+<h3>@Html.Label("Due Date:")</h3>
+<h3>@Html.DisplayFor(model => model.DueDate)</h3>
+
+@* <h3>@Html.DisplayNameFor(model => model.DueDate)</h3> *@
+

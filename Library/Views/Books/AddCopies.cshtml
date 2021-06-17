@@ -11,9 +11,11 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.BookId)
+    @Html.HiddenFor(model => model.Title)
 
     @Html.Label("Enter number of copies for book")
     @Html.TextBox("CopyNumber")
+
 
     <input type="submit" value="Save" />
 }

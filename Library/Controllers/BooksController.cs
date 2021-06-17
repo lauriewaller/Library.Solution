@@ -24,12 +24,13 @@ namespace Library.Controllers
       _db = db; //We also include a constructor to instantiate private readonly instances of the database and the UserManager.
     }
 
-    public async Task<ActionResult> Index()
+    public ActionResult Index()
     {
-      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //locate the unique identifier for the currently-logged-in user and assign it the variable name userId. this refers to the BookController itself. FindFirst() is a method that locates the first record that meets the provided criteria. This method takes ClaimTypes.NameIdentifier as an argument. We specify ClaimTypes.NameIdentifier to locate the unique ID associated with the current account. NameIdentifier is a property that refers to an Entity's unique ID. The ? is called an existential operator.   if we successfully locate the NameIdentifier of the current user, we'll call Value() to retrieve the actual unique identifier value.
-      var currentUser = await _userManager.FindByIdAsync(userId); //First we call the UserManager service that we've injected into this controller.We call the FindByIdAsync() method, which, as its name suggests, is a built-in Identity method used to find a user's account by their unique ID. We provide the userId we just located as an argument to FindByIdAsync(). Thanks to the handy Async suffix in this methods name, we know it runs asynchronously. We include the await keyword so the code will wait for Identity to locate the correct user before moving on.
-      var userBooks = _db.Books.Where(entry => entry.User.Id == currentUser.Id).ToList();
-      return View(userBooks);
+      // var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //locate the unique identifier for the currently-logged-in user and assign it the variable name userId. this refers to the BookController itself. FindFirst() is a method that locates the first record that meets the provided criteria. This method takes ClaimTypes.NameIdentifier as an argument. We specify ClaimTypes.NameIdentifier to locate the unique ID associated with the current account. NameIdentifier is a property that refers to an Entity's unique ID. The ? is called an existential operator.   if we successfully locate the NameIdentifier of the current user, we'll call Value() to retrieve the actual unique identifier value.
+      // var currentUser = await _userManager.FindByIdAsync(userId); //First we call the UserManager service that we've injected into this controller.We call the FindByIdAsync() method, which, as its name suggests, is a built-in Identity method used to find a user's account by their unique ID. We provide the userId we just located as an argument to FindByIdAsync(). Thanks to the handy Async suffix in this methods name, we know it runs asynchronously. We include the await keyword so the code will wait for Identity to locate the correct user before moving on.
+      // var userBooks = _db.Books.Where(entry => entry.User.Id == currentUser.Id).ToList();
+      List<Book> model = _db.Books.ToList();
+      return View(model);
     }
 
     public ActionResult Create()
@@ -38,11 +39,11 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(Book book)
+    public ActionResult Create(Book book, int AuthorId)
     {
-      var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      var currentUser = await _userManager.FindByIdAsync(userId);
-      book.User = currentUser;
+      // var userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      // var currentUser = await _userManager.FindByIdAsync(userId);
+      // book.User = currentUser;
       _db.Books.Add(book);
       _db.SaveChanges();
       // if (AuthorId != 0)
@@ -55,6 +56,7 @@ namespace Library.Controllers
 
     public ActionResult Details(int id)
     {
+      ViewBag.copies = _db.Copies.Where(s => s.BookId == id).ToList();
       var thisBook = _db.Books
       .Include(book => book.JoinEntities)
       .ThenInclude(join => join.Author)
@@ -130,11 +132,12 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public ActionResult AddCopies(int BookId, Copy copy, string CopyNumber)
+    public ActionResult AddCopies(int BookId, Copy copy, string CopyNumber, string Title)
     {
       var convertedCopyNumber = Convert.ToInt32(CopyNumber);
       for (int i = 0; i < convertedCopyNumber; i ++)
       {
+        copy.BookTitle = Title;
         _db.Copies.Add(copy);
         _db.SaveChanges();
         copy.CopyId = copy.CopyId + 1;
@@ -142,6 +145,19 @@ namespace Library.Controllers
 
       return RedirectToAction("Index");
     }
+
+    [HttpPost]
+    public ActionResult CheckOut(int copyId)
+    {
+      Copy thisCopy = _db.Copies.FirstOrDefault(copy => copy.CopyId == copyId);
+      thisCopy.CheckedOutDate = DateTime.Now;
+      thisCopy.DueDate = DateTime.Now.AddDays(14);
+      thisCopy.CheckedOut = true;
+      _db.Entry(thisCopy).State = EntityState.Modified;
+      _db.SaveChanges();
+      return RedirectToAction("Details", "Copies", new { id = copyId });
+    }
+
   }
 }
 
